@@ -1,0 +1,31 @@
+{
+  "name": "@michaelstingl/docusaurus-hub-prov",
+  "version": "0.1.0",
+  "description": "W3C-PROV link transformer for Docusaurus — turns [agent:id], [source:id], [doc:id] etc. into clickable links to a central references registry",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.mjs",
+    "./preprocessor": "./src/preprocessor.mjs"
+  },
+  "main": "./src/index.mjs",
+  "types": "./types/index.d.ts",
+  "files": [
+    "src/",
+    "types/"
+  ],
+  "keywords": [
+    "docusaurus",
+    "markdown",
+    "preprocessor",
+    "w3c-prov",
+    "provenance",
+    "knowledge-base",
+    "agents-md"
+  ],
+  "author": "Michael Stingl",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/michaelstingl/docusaurus-hub-prov.git"
+  }
+}
