@@ -20,6 +20,22 @@ The current hoster is \[[agent:bisping](/register/#agent-bisping)\].
 
 It also injects predictable `{#type-id}` heading anchors inside the registry, so the link targets resolve cleanly without manual anchor maintenance.
 
+### Display labels (since v0.2)
+
+The bracket notation is great for prose where the marker should stay recognisable, but it clutters print and PDF output where link styling is lost. Use the optional `|Label` syntax to render a clean Markdown link:
+
+```markdown
+The current hoster is [agent:bisping|Bisping].
+```
+
+After preprocessing:
+
+```markdown
+The current hoster is [Bisping](/register/#agent-bisping).
+```
+
+The legacy notation `[agent:bisping]` (without label) keeps working unchanged.
+
 ## Install
 
 ```bash
@@ -95,7 +111,7 @@ createProvPreprocessor({
 });
 ```
 
-## Known limitations (v0.1)
+## Known limitations
 
 - **Plain regex, no AST.** The plugin runs before MDX parsing and rewrites every match, including inside fenced code blocks and inline code. To keep a literal `[agent:foo]` in a code sample, escape it (`\[agent:foo\]`) or wrap it in a heading-level construct that does not match.
 - **No registry validation.** Unknown IDs produce links to non-existent anchors. Docusaurus' `onBrokenLinks: warn` will flag those after the build.

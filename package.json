@@ -1,6 +1,6 @@
 {
   "name": "@michaelstingl/docusaurus-hub-prov",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "W3C-PROV link transformer for Docusaurus — turns [agent:id], [source:id], [doc:id] etc. into clickable links to a central references registry",
   "type": "module",
   "exports": {

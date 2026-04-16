@@ -5,6 +5,19 @@
  * pointing to a central references registry, and ensures predictable heading
  * anchors inside that registry.
  *
+ * Two notations are supported:
+ *
+ *   [agent:hackner]         — legacy / default. Renders as a clickable link
+ *                             whose label keeps the bracket notation visible
+ *                             (`[agent:hackner]`). Useful when the marker
+ *                             itself should stay recognisable in prose.
+ *
+ *   [agent:hackner|Hackner] — explicit display label. Renders as a clean
+ *                             Markdown link with `Hackner` as anchor text.
+ *                             Use this in print/PDF-bound documents where
+ *                             link styling is lost and the raw marker would
+ *                             clutter the text.
+ *
  * Reference architecture: https://gist.github.com/michaelstingl/d915a88fad79469796320f5bd6d34821
  *
  * Pragmatic v1 — known limitations:
@@ -26,12 +39,20 @@ const DEFAULT_TYPES = [
 ];
 
 /**
- * Build the regex matching `[type:id]` while skipping IDs that are already
- * followed by a Markdown link target `(...)`.
+ * Build the regex matching `[type:id]` or `[type:id|Label]` while skipping
+ * IDs that are already followed by a Markdown link target `(...)`.
+ *
+ * Capture groups:
+ *   1: type (e.g. `agent`)
+ *   2: id   (e.g. `hackner`)
+ *   3: label (optional, anything after `|` up to `]`, no `]` allowed)
  */
 function buildIdPattern(types) {
   const typeAlt = types.join('|');
-  return new RegExp(`\\[(${typeAlt}):([a-z0-9-]+)\\](?!\\()`, 'g');
+  return new RegExp(
+    `\\[(${typeAlt}):([a-z0-9-]+)(?:\\|([^\\]]+))?\\](?!\\()`,
+    'g'
+  );
 }
 
 /**
@@ -85,10 +106,20 @@ export function createPreprocessor({
       });
     }
 
-    // Everywhere else: replace `[type:id]` with a Markdown link, keeping the
-    // bracket notation visible by escaping the surrounding brackets.
-    return fileContent.replace(idPattern, (_match, type, id) => {
-      return `\\[[${type}:${id}](${route}#${type}-${id})\\]`;
+    // Everywhere else: replace `[type:id]` or `[type:id|Label]` with a
+    // Markdown link.
+    //
+    //   [agent:hackner]         → \[[agent:hackner](/register/#agent-hackner)\]
+    //                              (legacy: keeps bracket notation visible)
+    //   [agent:hackner|Hackner] → [Hackner](/register/#agent-hackner)
+    //                              (clean link, label as anchor text — readable
+    //                              in print and PDF where link styling is lost)
+    return fileContent.replace(idPattern, (_match, type, id, label) => {
+      const href = `${route}#${type}-${id}`;
+      if (label) {
+        return `[${label.trim()}](${href})`;
+      }
+      return `\\[[${type}:${id}](${href})\\]`;
     });
   };
 }
